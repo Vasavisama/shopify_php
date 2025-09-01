@@ -19,21 +19,22 @@ Route::get('/login', function () {
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:web')->name('logout');
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ThemeController;
 
-Route::middleware(['auth:api', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [\App\Http\Controllers\DashboardController::class, 'profile'])->name('profile');
     Route::resource('themes', ThemeController::class);
     Route::resource('stores', StoreController::class);
     Route::resource('products', ProductController::class);
     // Add other admin routes here
 });
 
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['auth:web'])->group(function () {
     Route::get('/dashboard/admin', function () {
         return view('dashboard.admin');
     })->middleware('role:admin')->name('dashboard.admin');

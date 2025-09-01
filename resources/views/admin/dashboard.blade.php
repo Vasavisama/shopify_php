@@ -63,50 +63,39 @@
     </div>
 
     <div class="mt-8">
-        <h4 class="text-gray-700 text-xl font-medium">Stores</h4>
-        <div class="flex flex-col mt-6">
-            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Name
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Domain
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Theme
-                                    </th>
-                                    <th scope="col" class="relative px-6 py-3">
-                                        <span class="sr-only">View</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($stores as $store)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ $store->name }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ $store->domain }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ $store->theme->name ?? 'No Theme' }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="{{ route('admin.stores.show', $store) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+        <h4 class="text-gray-700 text-xl font-medium">Recent Stores</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            @forelse ($stores->take(3) as $store)
+                @php
+                    $theme = $store->theme;
+                    $bgColor = $theme ? $theme->background_color : '#ffffff';
+                    $fontColor = $theme ? $theme->font_color : '#000000';
+                    $fontStyle = $theme ? $theme->font_style : 'normal';
+                    $fontSize = $theme ? $theme->font_size . 'px' : '16px';
+                @endphp
+                <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: {{ $bgColor }}; color: {{ $fontColor }}; font-family: {{ $fontStyle }}; font-size: {{ $fontSize }};">
+                    @if($store->logo_path)
+                        <img class="w-full h-48 object-cover" src="{{ asset('storage/' . $store->logo_path) }}" alt="{{ $store->name }} logo">
+                    @else
+                        <div class="w-full h-48 flex items-center justify-center bg-gray-200">
+                            <span class="text-gray-500">No Logo</span>
+                        </div>
+                    @endif
+                    <div class="p-6">
+                        <h4 class="font-bold text-xl mb-2">{{ $store->name }}</h4>
+                        <p class="text-base mb-4">
+                            {{ Str::limit($store->description, 100) ?? 'No description provided.' }}
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <a href="{{ route('admin.stores.show', $store) }}" class="text-blue-500 hover:text-blue-700 font-bold">View Store</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @empty
+                <div class="col-span-full text-center text-gray-500">
+                    <p>No stores found. <a href="{{ route('admin.stores.create') }}" class="text-blue-500 hover:underline">Create one now!</a></p>
+                </div>
+            @endforelse
         </div>
     </div>
 @endsection

@@ -33,34 +33,31 @@
         </div>
     @endif
 
-    <div class="bg-white shadow-md rounded my-6">
-        <table class="min-w-full table-auto">
-            <thead>
-                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left">Name</th>
-                    <th class="py-3 px-6 text-left">Description</th>
-                    <th class="py-3 px-6 text-center">Price</th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-600 text-sm font-light">
-                @forelse ($store->products as $product)
-                    <tr class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6 text-left whitespace-nowrap">
-                            <span class="font-medium">{{ $product->name }}</span>
-                        </td>
-                        <td class="py-3 px-6 text-left">
-                            {{ $product->description }}
-                        </td>
-                        <td class="py-3 px-6 text-center">
-                            <span>${{ number_format($product->price, 2) }}</span>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="3" class="py-4 px-6 text-center">No products found for this store.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        @forelse ($store->products as $product)
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                @if($product->image_path)
+                    <img class="w-full h-48 object-cover" src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->name }} image">
+                @else
+                    <div class="w-full h-48 flex items-center justify-center bg-gray-200">
+                        <span class="text-gray-500">No Image</span>
+                    </div>
+                @endif
+                <div class="p-6">
+                    <h4 class="font-bold text-xl mb-2">{{ $product->name }}</h4>
+                    <p class="text-gray-700 text-base mb-4">
+                        {{ $product->description ?? 'No description provided.' }}
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xl font-bold text-gray-900">${{ number_format($product->price, 2) }}</span>
+                        <a href="{{ route('admin.products.edit', $product) }}" class="text-blue-500 hover:text-blue-700 font-bold">Edit</a>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="col-span-full text-center text-gray-500">
+                <p>No products found for this store. <a href="{{ route('admin.products.create', ['store_id' => $store->id]) }}" class="text-blue-500 hover:underline">Add one now!</a></p>
+            </div>
+        @endforelse
     </div>
 @endsection

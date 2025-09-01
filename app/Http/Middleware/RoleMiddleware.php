@@ -11,7 +11,7 @@ class RoleMiddleware
 {
     public function handle(Request $request, Closure $next, $role): Response
     {
-        $user = auth('api')->user();
+        $user = auth()->user();
         if (!$user) {
             Log::warning('No authenticated user found in RoleMiddleware');
             return redirect()->route('login');

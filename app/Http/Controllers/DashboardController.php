@@ -22,4 +22,15 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact('stores', 'productsCount', 'themesCount'));
     }
+
+    /**
+     * Display the admin profile page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function profile()
+    {
+        $admin = auth()->user();
+        return view('admin.profile', compact('admin'));
+    }
 }

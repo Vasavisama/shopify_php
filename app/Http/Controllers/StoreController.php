@@ -56,7 +56,7 @@ class StoreController extends Controller
 
     public function show(Store $store)
     {
-        $store->load('products');
+        $store->load('products', 'theme');
         return view('admin.stores.show', compact('store'));
     }
 
