@@ -20,10 +20,17 @@
         @forelse ($stores as $store)
             @php
                 $theme = $store->theme;
-                $bgColor = $theme->background_color ?? '#ffffff';
-                $fontColor = $theme->font_color ?? '#000000';
-                $fontStyle = $theme->font_style ?? 'sans-serif';
-                $fontSize = $theme && $theme->font_size ? $theme->font_size . 'px' : '16px';
+                if ($theme) {
+                    $bgColor = $theme->background_color ?? '#ffffff';
+                    $fontColor = $theme->font_color ?? '#000000';
+                    $fontStyle = $theme->font_style ?? 'sans-serif';
+                    $fontSize = $theme->font_size ? $theme->font_size . 'px' : '16px';
+                } else {
+                    $bgColor = '#ffffff';
+                    $fontColor = '#000000';
+                    $fontStyle = 'sans-serif';
+                    $fontSize = '16px';
+                }
             @endphp
             <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: {{ $bgColor }}; color: {{ $fontColor }}; font-family: {{ $fontStyle }}; font-size: {{ $fontSize }};">
                 @if($store->logo_path)
