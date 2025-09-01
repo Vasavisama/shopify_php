@@ -51,7 +51,7 @@ class StoreController extends Controller
 
         ApplyThemeToStore::dispatch($store);
 
-        return redirect()->route('admin.stores.index')->with('success', 'Store created successfully. The theme is being applied in the background.');
+        return redirect()->route('admin.stores.show', $store)->with('success', 'Store created successfully. The theme is being applied in the background.');
     }
 
     public function show(Store $store)

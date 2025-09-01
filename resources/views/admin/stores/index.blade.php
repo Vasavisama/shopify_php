@@ -20,11 +20,17 @@
         @forelse ($stores as $store)
             @php
                 $theme = $store->theme;
+                $fontMap = [
+                    'small' => '12px',
+                    'medium' => '16px',
+                    'large' => '20px',
+                ];
+
                 if ($theme) {
                     $bgColor = $theme->background_color ?? '#ffffff';
                     $fontColor = $theme->font_color ?? '#000000';
                     $fontStyle = $theme->font_style ?? 'sans-serif';
-                    $fontSize = $theme->font_size ? $theme->font_size . 'px' : '16px';
+                    $fontSize = $fontMap[$theme->font_size] ?? '16px';
                 } else {
                     $bgColor = '#ffffff';
                     $fontColor = '#000000';
