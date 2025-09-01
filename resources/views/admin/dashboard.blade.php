@@ -63,12 +63,15 @@
             @foreach ($stores as $store)
                 <a href="{{ route('admin.stores.show', $store) }}" class="block">
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300"
+                         @if($store->theme)
                          style="
-                            background-color: {{ $store->theme->background_color ?? '#ffffff' }};
-                            color: {{ $store->theme->font_color ?? '#000000' }};
-                            font-family: {{ $store->theme->font_style ?? 'sans-serif' }};
-                            font-size: {{ $store->theme->font_size ?? 'medium' }};
-                         ">
+                            background-color: {{ $store->theme->background_color }};
+                            color: {{ $store->theme->font_color }};
+                            font-family: {{ $store->theme->font_style }};
+                            font-size: {{ $store->theme->font_size }};
+                         "
+                         @endif
+                         >
                         <div class="p-6">
                             <h5 class="text-lg font-bold">{{ $store->name }}</h5>
                             <p class="mt-2">{{ $store->domain }}</p>

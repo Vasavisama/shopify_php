@@ -17,7 +17,11 @@
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2">Theme</label>
-            <p class="text-gray-700">{{ $store->theme->name ?? 'No Theme' }}</p>
+            @if($store->theme)
+                <p class="text-gray-700">{{ $store->theme->name }}</p>
+            @else
+                <p class="text-gray-700">No Theme</p>
+            @endif
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
