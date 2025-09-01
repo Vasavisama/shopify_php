@@ -21,6 +21,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
 
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ThemeController;
 
@@ -28,6 +29,7 @@ Route::middleware(['auth:api', 'role:admin'])->prefix('admin')->name('admin.')->
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('themes', ThemeController::class);
     Route::resource('stores', StoreController::class);
+    Route::resource('products', ProductController::class)->only(['create', 'store']);
     // Add other admin routes here
 });
 

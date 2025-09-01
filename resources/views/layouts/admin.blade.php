@@ -14,7 +14,7 @@
             <nav class="mt-10">
                 <a href="{{ route('admin.dashboard') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Dashboard</a>
                 <a href="{{ route('admin.stores.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Stores</a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Products</a>
+                <a href="{{ route('admin.products.create') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Products</a>
                 <a href="{{ route('admin.themes.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Themes</a>
             </nav>
         </div>

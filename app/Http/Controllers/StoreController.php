@@ -54,6 +54,12 @@ class StoreController extends Controller
         return redirect()->route('admin.stores.index')->with('success', 'Store created successfully. The theme is being applied in the background.');
     }
 
+    public function show(Store $store)
+    {
+        $store->load('products');
+        return view('admin.stores.show', compact('store'));
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
