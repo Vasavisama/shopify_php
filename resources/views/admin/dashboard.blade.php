@@ -5,9 +5,14 @@
 @section('content')
     <div class="flex justify-between items-center">
         <h3 class="text-gray-700 text-3xl font-medium">Welcome to the Dashboard</h3>
-        <a href="{{ route('admin.products.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Add Product
-        </a>
+        <div>
+            <a href="{{ route('admin.stores.create') }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mr-2">
+                Create Store
+            </a>
+            <a href="{{ route('admin.products.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Add Product
+            </a>
+        </div>
     </div>
 
     <div class="mt-4">

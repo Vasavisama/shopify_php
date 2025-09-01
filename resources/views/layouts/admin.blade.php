@@ -13,8 +13,8 @@
             <div class="p-4 text-xl font-bold">Admin Panel</div>
             <nav class="mt-10">
                 <a href="{{ route('admin.dashboard') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Dashboard</a>
-                <a href="{{ route('admin.stores.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Stores</a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Products</a>
+                <a href="{{ route('admin.stores.create') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Stores</a>
+                <a href="{{ route('admin.products.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Products</a>
                 <a href="{{ route('admin.themes.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Themes</a>
             </nav>
         </div>
@@ -27,7 +27,7 @@
                     <h1 class="text-2xl font-bold text-gray-800">@yield('title', 'Dashboard')</h1>
                 </div>
                 <div>
-                    <a href="#" class="text-gray-600 hover:text-gray-800 mr-4">Products</a>
+                    <a href="{{ route('admin.products.index') }}" class="text-gray-600 hover:text-gray-800 mr-4">Products</a>
                     <a href="#" class="text-gray-600 hover:text-gray-800 mr-4">Profile</a>
                     <form action="{{ route('logout') }}" method="POST" class="inline">
                         @csrf

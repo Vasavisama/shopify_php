@@ -16,56 +16,48 @@
         </div>
     @endif
 
-    <div class="bg-white shadow-md rounded my-6">
-        <table class="min-w-full table-auto">
-            <thead>
-                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left">Name</th>
-                    <th class="py-3 px-6 text-left">Domain</th>
-                    <th class="py-3 px-6 text-center">Theme</th>
-                    <th class="py-3 px-6 text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-600 text-sm font-light">
-                @forelse ($stores as $store)
-                    <tr class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6 text-left whitespace-nowrap">
-                            <span class="font-medium">{{ $store->name }}</span>
-                        </td>
-                        <td class="py-3 px-6 text-left">
-                            <a href="http://{{ $store->domain }}" target="_blank" class="text-blue-500 hover:underline">{{ $store->domain }}</a>
-                        </td>
-                        <td class="py-3 px-6 text-center">
-                            <span>{{ $store->theme->name ?? 'No Theme' }}</span>
-                        </td>
-                        <td class="py-3 px-6 text-center">
-                            <div class="flex item-center justify-center">
-                                <a href="{{ route('admin.stores.edit', $store) }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L14.732 3.732z" />
-                                    </svg>
-                                </a>
-                                <form action="{{ route('admin.stores.destroy', $store) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this store?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110" style="cursor: pointer; border: none; background: transparent;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="py-4 px-6 text-center">No stores found.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        <div class="p-4">
-            {{ $stores->links() }}
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse ($stores as $store)
+            @php
+                $theme = $store->theme;
+                $bgColor = $theme->background_color ?? '#ffffff';
+                $fontColor = $theme->font_color ?? '#000000';
+                $fontStyle = $theme->font_style ?? 'sans-serif';
+                $fontSize = $theme && $theme->font_size ? $theme->font_size . 'px' : '16px';
+            @endphp
+            <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: {{ $bgColor }}; color: {{ $fontColor }}; font-family: {{ $fontStyle }}; font-size: {{ $fontSize }};">
+                @if($store->logo_path)
+                    <img class="w-full h-48 object-cover" src="{{ asset('storage/' . $store->logo_path) }}" alt="{{ $store->name }} logo">
+                @else
+                    <div class="w-full h-48 flex items-center justify-center bg-gray-200">
+                        <span class="text-gray-500">No Logo</span>
+                    </div>
+                @endif
+                <div class="p-6">
+                    <h4 class="font-bold text-xl mb-2">{{ $store->name }}</h4>
+                    <p class="text-base mb-4">
+                        {{ $store->description ?? 'No description provided.' }}
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <a href="{{ route('admin.stores.show', $store) }}" class="text-blue-500 hover:text-blue-700 font-bold">View Store</a>
+                        <div class="flex items-center">
+                            <a href="{{ route('admin.stores.edit', $store) }}" class="text-gray-500 hover:text-gray-700 mr-4">Edit</a>
+                            <form action="{{ route('admin.stores.destroy', $store) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-500 hover:text-red-700">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="col-span-full text-center text-gray-500">
+                <p>No stores found. <a href="{{ route('admin.stores.create') }}" class="text-blue-500 hover:underline">Create one now!</a></p>
+            </div>
+        @endforelse
+    </div>
+    <div class="mt-8">
+        {{ $stores->links() }}
     </div>
 @endsection
