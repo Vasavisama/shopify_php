@@ -3,7 +3,12 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <h3 class="text-gray-700 text-3xl font-medium">Welcome to the Dashboard</h3>
+    <div class="flex justify-between items-center">
+        <h3 class="text-gray-700 text-3xl font-medium">Welcome to the Dashboard</h3>
+        <a href="{{ route('admin.products.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Add Product
+        </a>
+    </div>
 
     <div class="mt-4">
         <div class="flex flex-wrap -mx-6">
@@ -18,7 +23,7 @@
                     </div>
 
                     <div class="mx-5">
-                        <h4 class="text-2xl font-semibold text-gray-700">10</h4>
+                        <h4 class="text-2xl font-semibold text-gray-700">{{ $stores->count() }}</h4>
                         <div class="text-gray-500">Stores</div>
                     </div>
                 </div>
@@ -31,7 +36,7 @@
                     </div>
 
                     <div class="mx-5">
-                        <h4 class="text-2xl font-semibold text-gray-700">50</h4>
+                        <h4 class="text-2xl font-semibold text-gray-700">{{ $productsCount }}</h4>
                         <div class="text-gray-500">Products</div>
                     </div>
                 </div>
@@ -44,11 +49,33 @@
                     </div>
 
                     <div class="mx-5">
-                        <h4 class="text-2xl font-semibold text-gray-700">5</h4>
+                        <h4 class="text-2xl font-semibold text-gray-700">{{ $themesCount }}</h4>
                         <div class="text-gray-500">Themes</div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="mt-8">
+        <h4 class="text-gray-700 text-xl font-medium">Stores</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            @foreach ($stores as $store)
+                <a href="{{ route('admin.stores.show', $store) }}" class="block">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300"
+                         style="
+                            background-color: {{ $store->theme->background_color ?? '#ffffff' }};
+                            color: {{ $store->theme->font_color ?? '#000000' }};
+                            font-family: {{ $store->theme->font_style ?? 'sans-serif' }};
+                            font-size: {{ $store->theme->font_size ?? 'medium' }};
+                         ">
+                        <div class="p-6">
+                            <h5 class="text-lg font-bold">{{ $store->name }}</h5>
+                            <p class="mt-2">{{ $store->domain }}</p>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
         </div>
     </div>
 @endsection

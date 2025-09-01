@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use App\Models\Store;
+use App\Models\Theme;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -13,6 +16,10 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('admin.dashboard');
+        $stores = Store::with('theme')->latest()->get();
+        $productsCount = Product::count();
+        $themesCount = Theme::count();
+
+        return view('admin.dashboard', compact('stores', 'productsCount', 'themesCount'));
     }
 }
