@@ -26,6 +26,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\WishlistController;
 
 Route::get('/customer/stores', [CustomerController::class, 'index'])->name('customer.stores.index');
 Route::get('/customer/stores/{store}', [CustomerController::class, 'show'])->name('customer.stores.show');
@@ -50,4 +51,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/dashboard/user', function () {
         return view('dashboard.user');
     })->middleware('role:user')->name('dashboard.user');
+
+    // Wishlist Routes
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
 });
