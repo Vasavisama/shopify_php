@@ -30,9 +30,7 @@ class DashboardController extends Controller
      */
     public function userDashboard()
     {
-        $stores = Store::whereHas('user', function ($query) {
-            $query->where('role', 'admin');
-        })->get();
+        $stores = Store::all();
 
         return view('dashboard.user', compact('stores'));
     }

@@ -27,6 +27,12 @@ use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/run-tests', function () {
+    Artisan::call('test');
+    return Artisan::output();
+});
 
 Route::get('/customer/stores', [CustomerController::class, 'index'])->name('customer.stores.index');
 Route::get('/customer/stores/{store}', [CustomerController::class, 'show'])->name('customer.stores.show');

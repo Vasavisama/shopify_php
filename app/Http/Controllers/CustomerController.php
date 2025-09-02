@@ -9,9 +9,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $stores = Store::whereHas('user', function ($query) {
-            $query->where('role', 'admin');
-        })->get();
+        $stores = Store::all();
         return view('customer.stores.index', compact('stores'));
     }
 
