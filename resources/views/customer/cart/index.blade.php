@@ -2,7 +2,14 @@
 
 @section('content')
 <div class="container">
-    <h1>Your Cart</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Your Cart</h1>
+        @auth
+            <a href="{{ route('wishlist.index') }}" class="btn btn-outline-primary">
+                View Wishlist
+            </a>
+        @endauth
+    </div>
     @if(!empty($cart))
         <table class="table">
             <thead>

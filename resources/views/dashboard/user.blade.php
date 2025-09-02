@@ -1,51 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard - Shopify Clone</title>
-    <style>
-        body {
-            background-color: #f7fafc;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            color: white;
-            background-color: #dc3545;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .success {
-            color: green;
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        @if (session('success'))
-            <div class="success">{{ session('success') }}</div>
-        @endif
-        <h1>User Dashboard</h1>
-        <p>Welcome, {{ auth()->user()->name }}! Your store: {{ auth()->user()->store->name }}</p>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="button">Logout</button>
-        </form>
+@extends('layouts.customer')
+
+@section('content')
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>All Stores</h1>
+        <a href="{{ route('cart.index') }}" class="btn btn-primary">
+            View Cart
+        </a>
     </div>
-</body>
-</html>
+
+    <div class="list-group">
+        @if(isset($stores) && $stores->count() > 0)
+            @foreach($stores as $store)
+                <a href="{{ route('customer.stores.show', $store) }}" class="list-group-item list-group-item-action">
+                    {{ $store->name }}
+                </a>
+            @endforeach
+        @else
+            <p>No stores found.</p>
+        @endif
+    </div>
+</div>
+@endsection

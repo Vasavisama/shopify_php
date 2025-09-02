@@ -14,10 +14,21 @@
                         <h5 class="card-title">{{ $product->name }}</h5>
                         <p class="card-text">{{ $product->description }}</p>
                         <p class="card-text"><strong>Price:</strong> ${{ $product->price }}</p>
-                        <form action="{{ route('cart.add', $product) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-primary">Add to Cart</button>
-                        </form>
+                        <div class="d-flex">
+                            <form action="{{ route('cart.add', $product) }}" method="POST" class="me-2">
+                                @csrf
+                                <button type="submit" class="btn btn-primary">Add to Cart</button>
+                            </form>
+                            @auth
+                                <form action="{{ route('wishlist.store') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                    <button type="submit" class="btn btn-outline-secondary">
+                                        &#x2661; Add to Wishlist
+                                    </button>
+                                </form>
+                            @endauth
+                        </div>
                     </div>
                 </div>
             </div>
