@@ -23,9 +23,7 @@ class CartController extends Controller
     {
         $cart = session()->get('cart', []);
 
-        if(isset($cart[$product->id])) {
-            $cart[$product->id]['quantity']++;
-        } else {
+        if(!isset($cart[$product->id])) {
             $cart[$product->id] = [
                 "name" => $product->name,
                 "quantity" => 1,
@@ -36,6 +34,35 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Product added to cart successfully!');
+    }
+
+    public function increment(Product $product)
+    {
+        $cart = session()->get('cart', []);
+
+        if(isset($cart[$product->id])) {
+            $cart[$product->id]['quantity']++;
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->back()->with('success', 'Product quantity updated successfully!');
+    }
+
+    public function decrement(Product $product)
+    {
+        $cart = session()->get('cart', []);
+
+        if(isset($cart[$product->id])) {
+            if($cart[$product->id]['quantity'] > 1) {
+                $cart[$product->id]['quantity']--;
+                session()->put('cart', $cart);
+            } else {
+                unset($cart[$product->id]);
+                session()->put('cart', $cart);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Product quantity updated successfully!');
     }
 
     public function update(Request $request, Product $product)
