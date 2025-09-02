@@ -22,4 +22,18 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact('stores', 'productsCount', 'themesCount'));
     }
+
+    /**
+     * Display the user dashboard.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function userDashboard()
+    {
+        $stores = Store::whereHas('user', function ($query) {
+            $query->where('role', 'admin');
+        })->get();
+
+        return view('dashboard.user', compact('stores'));
+    }
 }

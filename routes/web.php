@@ -34,6 +34,8 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{product}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/increment/{product}', [CartController::class, 'increment'])->name('cart.increment');
+Route::post('/cart/decrement/{product}', [CartController::class, 'decrement'])->name('cart.decrement');
 
 Route::middleware(['auth:api', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
@@ -48,9 +50,7 @@ Route::middleware(['auth:api'])->group(function () {
         return view('dashboard.admin');
     })->middleware('role:admin')->name('dashboard.admin');
 
-    Route::get('/dashboard/user', function () {
-        return view('dashboard.user');
-    })->middleware('role:user')->name('dashboard.user');
+    Route::get('/dashboard/user', [\App\Http\Controllers\DashboardController::class, 'userDashboard'])->middleware('role:user')->name('dashboard.user');
 
     // Wishlist Routes
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
