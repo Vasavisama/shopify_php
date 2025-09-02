@@ -27,10 +27,13 @@
                         <td>{{ $details['name'] }}</td>
                         <td>${{ $details['price'] }}</td>
                         <td>
-                            <form action="{{ route('cart.update', $id) }}" method="POST" class="d-flex">
+                            <form action="{{ route('cart.update', $id) }}" method="POST" class="d-flex align-items-center">
                                 @csrf
-                                <input type="number" name="quantity" value="{{ $details['quantity'] }}" class="form-control" style="width: 60px;">
-                                <button type="submit" class="btn btn-secondary btn-sm ms-2">Update</button>
+                                <input type="hidden" name="quantity" value="{{ $details['quantity'] }}" class="quantity-input">
+                                <button type="button" class="btn btn-outline-secondary btn-sm quantity-minus">-</button>
+                                <span class="mx-2 quantity">{{ $details['quantity'] }}</span>
+                                <button type="button" class="btn btn-outline-secondary btn-sm quantity-plus">+</button>
+                                <button type="submit" class="btn btn-primary btn-sm ms-2 update-cart" style="display: none;">Update</button>
                             </form>
                         </td>
                         <td>${{ $details['price'] * $details['quantity'] }}</td>
@@ -51,4 +54,37 @@
         <p>Your cart is empty.</p>
     @endif
 </div>
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.quantity-plus').forEach(button => {
+        button.addEventListener('click', function () {
+            const form = this.closest('form');
+            const quantitySpan = form.querySelector('.quantity');
+            const quantityInput = form.querySelector('.quantity-input');
+            let quantity = parseInt(quantityInput.value);
+            quantity++;
+            quantityInput.value = quantity;
+            quantitySpan.textContent = quantity;
+            form.querySelector('.update-cart').style.display = 'inline-block';
+        });
+    });
+
+    document.querySelectorAll('.quantity-minus').forEach(button => {
+        button.addEventListener('click', function () {
+            const form = this.closest('form');
+            const quantitySpan = form.querySelector('.quantity');
+            const quantityInput = form.querySelector('.quantity-input');
+            let quantity = parseInt(quantityInput.value);
+            if (quantity > 1) {
+                quantity--;
+                quantityInput.value = quantity;
+                quantitySpan.textContent = quantity;
+                form.querySelector('.update-cart').style.display = 'inline-block';
+            }
+        });
+    });
+});
+</script>
 @endsection
