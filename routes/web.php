@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Store;
 
@@ -48,10 +49,14 @@ Route::middleware(['auth:api'])->group(function () {
         return view('dashboard.admin');
     })->middleware('role:admin')->name('dashboard.admin');
 
-    Route::get('/dashboard/user', function () {
+    Route::get('/dashboard/user', function (Request $request) {
         $stores = Store::whereHas('user', function ($query) {
             $query->where('role', 'admin');
         })->get();
-        return view('dashboard.user', compact('stores'));
+        $addresses = $request->user()->addresses;
+        return view('dashboard.user', compact('stores', 'addresses'));
     })->middleware('role:user')->name('dashboard.user');
+
+    Route::post('/customer/address', [CustomerController::class, 'storeAddress'])->name('customer.address.store');
+    Route::post('/customer/address/select', [CustomerController::class, 'selectAddress'])->name('customer.address.select');
 });

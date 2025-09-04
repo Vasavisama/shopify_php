@@ -36,7 +36,7 @@
                         </td>
                         <td>${{ $details['price'] * $details['quantity'] }}</td>
                         <td>
-                            <form action="{{ route('cart.remove', $id) }}" method="POST">
+                            <form action="{{ route('cart.remove', $id) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                             </form>
@@ -47,6 +47,24 @@
         </table>
         <div class="text-end mt-4">
             <h3 class="fw-bold">Total Bill: ${{ number_format($total, 2) }}</h3>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addressModal">
+                Buy
+            </button>
+        </div>
+
+        <!-- Address Modal -->
+        <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addressModalLabel">Add Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @include('customer.address.create')
+                    </div>
+                </div>
+            </div>
         </div>
     @else
         <p>Your cart is empty.</p>

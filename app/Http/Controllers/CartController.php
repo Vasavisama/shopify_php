@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $cart = session()->get('cart', []);
         $total = 0;
@@ -16,7 +16,10 @@ class CartController extends Controller
                 $total += $details['price'] * $details['quantity'];
             }
         }
-        return view('customer.cart.index', compact('cart', 'total'));
+
+        $addresses = auth()->check() ? $request->user()->addresses : collect();
+
+        return view('customer.cart.index', compact('cart', 'total', 'addresses'));
     }
 
     public function add(Request $request, Product $product)
