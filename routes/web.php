@@ -59,4 +59,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::post('/customer/address', [CustomerController::class, 'storeAddress'])->name('customer.address.store');
     Route::post('/customer/address/select', [CustomerController::class, 'selectAddress'])->name('customer.address.select');
+    Route::get('/customer/address/{address}/edit', [CustomerController::class, 'edit'])->name('customer.address.edit');
+    Route::put('/customer/address/{address}', [CustomerController::class, 'update'])->name('customer.address.update');
+    Route::delete('/customer/address/{address}', [CustomerController::class, 'destroy'])->name('customer.address.destroy');
 });

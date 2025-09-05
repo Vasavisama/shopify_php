@@ -1,24 +1,33 @@
 <div>
     <h5>Select Address</h5>
     @if($addresses->isEmpty())
-        <p>You have no saved addresses.</p>
+        <p>No saved addresses.</p>
     @else
-        <ul class="list-group">
+        <div class="row row-cols-1 row-cols-md-2 g-4">
             @foreach($addresses as $address)
-                <li class="list-group-item">
-                    <form action="{{ route('customer.address.select') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="address_id" value="{{ $address->id }}">
-                        <strong>{{ $address->name }}</strong> ({{ $address->address_type }})<br>
-                        {{ $address->flat_no }}, {{ $address->street }}, {{ $address->landmark }}<br>
-                        {{ $address->town }}, {{ $address->state }} - {{ $address->pincode }}<br>
-                        {{ $address->country }}<br>
-                        Phone: {{ $address->mobile_number }}
-                        <button type="submit" class="btn btn-primary btn-sm float-end">Deliver Here</button>
-                    </form>
-                </li>
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $address->name }} <span class="badge bg-secondary">{{ $address->address_type }}</span></h5>
+                            <p class="card-text">
+                                {{ $address->flat_no }}, {{ $address->street }}, {{ $address->landmark }}<br>
+                                {{ $address->town }}, {{ $address->state }} - {{ $address->pincode }}<br>
+                                {{ $address->country }}<br>
+                                Phone: {{ $address->mobile_number }}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{ route('customer.address.edit', $address) }}" class="btn btn-primary btn-sm">Edit</a>
+                            <form action="{{ route('customer.address.destroy', $address) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             @endforeach
-        </ul>
+        </div>
         <hr>
     @endif
 

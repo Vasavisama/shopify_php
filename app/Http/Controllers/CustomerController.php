@@ -51,4 +51,36 @@ class CustomerController extends Controller
 
         return redirect()->route('cart.index')->with('success', 'Address selected successfully!');
     }
+
+    public function edit(Address $address)
+    {
+        return view('customer.address.edit', compact('address'));
+    }
+
+    public function update(Request $request, Address $address)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'mobile_number' => 'required|string|max:15',
+            'street' => 'required|string|max:255',
+            'landmark' => 'required|string|max:255',
+            'town' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'pincode' => 'required|string|max:10',
+            'flat_no' => 'required|string|max:255',
+            'address_type' => 'required|in:Home,Work',
+        ]);
+
+        $address->update($request->all());
+
+        return redirect()->route('cart.index')->with('success', 'Address updated successfully!');
+    }
+
+    public function destroy(Address $address)
+    {
+        $address->delete();
+
+        return redirect()->route('cart.index')->with('success', 'Address deleted successfully!');
+    }
 }
