@@ -21,6 +21,11 @@ class CustomerController extends Controller
         return view('customer.stores.show', compact('store'));
     }
 
+    public function createAddress()
+    {
+        return view('customer.address.create');
+    }
+
     public function storeAddress(Request $request)
     {
         $request->validate([

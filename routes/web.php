@@ -57,6 +57,7 @@ Route::middleware(['auth:api'])->group(function () {
         return view('dashboard.user', compact('stores', 'addresses'));
     })->middleware('role:user')->name('dashboard.user');
 
+    Route::get('/customer/address/create', [CustomerController::class, 'createAddress'])->name('customer.address.create');
     Route::post('/customer/address', [CustomerController::class, 'storeAddress'])->name('customer.address.store');
     Route::post('/customer/address/select', [CustomerController::class, 'selectAddress'])->name('customer.address.select');
 });
