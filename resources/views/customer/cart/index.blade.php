@@ -48,11 +48,7 @@
 
         <div class="row mt-4">
             <div class="col-md-6">
-                @if($addresses->isNotEmpty())
-                    @php
-                        $selectedAddressId = session('selected_address_id');
-                        $selectedAddress = $selectedAddressId ? $addresses->firstWhere('id', $selectedAddressId) : $addresses->first();
-                    @endphp
+                @if($selectedAddress)
                     <h5>Shipping Address:</h5>
                     <div class="card">
                         <div class="card-body">
@@ -77,7 +73,7 @@
             </div>
             <div class="col-md-6 text-end">
                 <h3 class="fw-bold">Total Bill: ${{ number_format($total, 2) }}</h3>
-                <button type="button" class="btn btn-primary" @if($addresses->isEmpty() && !session()->has('selected_address_id')) disabled @endif>
+                <button type="button" class="btn btn-primary" @if(!$selectedAddress) disabled @endif>
                     Proceed to Checkout
                 </button>
             </div>

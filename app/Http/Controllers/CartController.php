@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -11,15 +12,19 @@ class CartController extends Controller
     {
         $cart = session()->get('cart', []);
         $total = 0;
-        if(is_array($cart)) {
+        if (is_array($cart)) {
             foreach ($cart as $id => $details) {
                 $total += $details['price'] * $details['quantity'];
             }
         }
 
         $addresses = auth()->check() ? $request->user()->addresses : collect();
+        $selectedAddress = null;
+        if (session()->has('selected_address_id')) {
+            $selectedAddress = Address::find(session('selected_address_id'));
+        }
 
-        return view('customer.cart.index', compact('cart', 'total', 'addresses'));
+        return view('customer.cart.index', compact('cart', 'total', 'addresses', 'selectedAddress'));
     }
 
     public function add(Request $request, Product $product)
