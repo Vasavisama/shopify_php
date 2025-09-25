@@ -4,120 +4,146 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Validator;
+use App\Notifications\PasswordResetNotification;
+use Illuminate\Support\Str;
+use App\Models\PasswordReset;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        try {
-            Log::info('Register request data:', $request->all());
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
 
-            if ($request->role === 'admin' && User::where('role', 'admin')->exists()) {
-                Log::warning('Attempt to register second admin');
-                return redirect()->route('register')->withErrors(['role' => 'Admin already exists']);
-            }
-
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed',
-                'role' => 'required|in:admin,user',
-            ]);
-
-            $user = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
-                'role' => $validated['role'],
-            ]);
-
-            if ($user->role === 'user') {
-                $user->store()->create([
-                    'name' => $user->name . "'s Store",
-                    'domain' => str_replace(' ', '-', strtolower($user->name)) . '.example.com',
-                ]);
-            }
-
-            $token = JWTAuth::fromUser($user);
-            session(['jwt_token' => $token]);
-            Log::info('User registered and token stored:', ['user_id' => $user->id, 'role' => $user->role]);
-
-            return redirect()->route('login')->with('success', 'Registration successful!');
-        } catch (JWTException $e) {
-            Log::error('Registration failed: Could not create token: ' . $e->getMessage());
-            return redirect()->route('register')->withErrors(['error' => 'Registration failed: Could not create user token.']);
-        } catch (\Exception $e) {
-            Log::error('Registration failed: ' . $e->getMessage());
-            return redirect()->route('register')->withErrors(['error' => 'Registration failed. Please try again.']);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'user', // Default to user for API registration
+        ]);
+
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ], 201);
     }
 
     public function login(Request $request)
     {
-        try {
-            Log::info('Login request data:', $request->all());
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required|string',
-            ]);
-
-            // Attempt authentication
-            if (!$token = JWTAuth::attempt($credentials)) {
-                Log::warning('Login failed: Invalid credentials', ['email' => $request->email]);
-                return redirect()->route('login')
-                    ->withErrors(['error' => 'Invalid email or password'])
-                    ->withInput($request->only('email'));
-            }
-
-            // Get authenticated user
-            $user = JWTAuth::user();
-            if (!$user) {
-                Log::error('Login failed: No user found after JWT authentication');
-                return redirect()->route('login')
-                    ->withErrors(['error' => 'Authentication failed'])
-                    ->withInput($request->only('email'));
-            }
-
-            // Store token in session
-            session(['jwt_token' => $token]);
-            Log::info('User logged in successfully:', ['user_id' => $user->id, 'role' => $user->role]);
-
-            // Set user in auth
-            auth('api')->setUser($user);
-
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard')->with('success', 'Login successful!');
-            }
-
-            return redirect()->route('customer.stores.index')->with('success', 'Login successful!');
-        } catch (JWTException $e) {
-            Log::error('Login failed: JWT error - ' . $e->getMessage());
-            return redirect()->route('login')
-                ->withErrors(['error' => 'Could not authenticate. Please try again.'])
-                ->withInput($request->only('email'));
-        } catch (\Exception $e) {
-            Log::error('Login failed: General error - ' . $e->getMessage());
-            return redirect()->route('login')
-                ->withErrors(['error' => 'An unexpected error occurred. Please try again.'])
-                ->withInput($request->only('email'));
+        if (!Auth::attempt($credentials)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
+
+        $user = $request->user();
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        try {
-            JWTAuth::invalidate(JWTAuth::getToken());
-            session()->forget('jwt_token');
-            Log::info('User logged out');
-            return redirect()->route('home')->with('success', 'Successfully logged out');
-        } catch (JWTException $e) {
-            Log::error('Logout failed: ' . $e->getMessage());
-            return redirect()->route('home')->withErrors(['error' => 'Failed to logout']);
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            $token = Str::random(60);
+
+            PasswordReset::updateOrCreate(
+                ['email' => $user->email],
+                [
+                    'token' => Hash::make($token),
+                    'created_at' => now(),
+                ]
+            );
+
+            $user->notify(new PasswordResetNotification($token));
         }
+
+        return response()->json(['message' => 'If your email is in our system, you will receive a password reset link.']);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $passwordReset = PasswordReset::where('email', $request->email)->first();
+
+        if (!$passwordReset || !Hash::check($request->token, $passwordReset->token)) {
+            return response()->json(['message' => 'Invalid token.'], 400);
+        }
+
+        $user = User::where('email', $passwordReset->email)->first();
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        PasswordReset::where('email', $request->email)->delete();
+
+        return response()->json(['message' => 'Password has been reset.']);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['message' => 'Current password does not match'], 401);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return response()->json(['message' => 'Password changed successfully']);
     }
 }
